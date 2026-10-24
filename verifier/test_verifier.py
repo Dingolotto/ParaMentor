@@ -1,10 +1,8 @@
-"""Tests del verificador. Ejecutar: python3 -m pytest verifier -q  (o python3 verifier/test_verifier.py)"""
-import sys
+"""Tests del verificador. Ejecutar desde la raíz: python3 -m unittest discover -v"""
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-from verifier import salidas_iguales, verificar  # noqa: E402
+from verifier.verifier import salidas_iguales, verificar
 
 EJEMPLOS = Path(__file__).resolve().parent.parent / "eval-set" / "ejemplos"
 
