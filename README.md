@@ -10,7 +10,7 @@ Su diferencia frente a un asistente generalista: **no da por buena una paraleliz
 modelo potente + RAG especializado + verificador + autocorrección + datos verificados
 ```
 
-Empieza con un modelo de frontera por API como cerebro y evolucionará a un modelo abierto propio entrenado con los datos que el sistema ha verificado ([por qué](docs/decisiones/0001-cerebro-por-api-primero.md), [arquitectura](docs/ARQUITECTURA.md)).
+Es un **prototipo de aprendizaje a coste 0 €**: modelo abierto local (Ollama), RAG local y fine-tuning en GPU gratuita, documentando todo el proceso de crear una IA especializada ([por qué](docs/decisiones/0002-prototipo-coste-cero.md), [arquitectura](docs/ARQUITECTURA.md), [hoja de ruta](docs/HOJA_DE_RUTA.md)).
 
 ## Modos
 
@@ -42,13 +42,13 @@ paramentor/
 ## Paralelizar con autocorrección
 
 ```bash
-pip install anthropic                       # o: pip install openai (para vLLM / Ollama / OpenRouter)
-export ANTHROPIC_API_KEY=...
-python3 -m agent.paralelizar mi_codigo.c --args 1000000 --args-carreras 10000 --nivel fundamentos
+# Gratis, en local: instala Ollama (https://ollama.com) y descarga un modelo de código
+pip install openai                          # cliente para el endpoint local de Ollama
+ollama pull <modelo>
+PARAMENTOR_MODEL=<modelo> python3 -m agent.paralelizar mi_codigo.c --args 1000000 --args-carreras 10000 --nivel fundamentos
 
-# Con un modelo local en Ollama
-PARAMENTOR_PROVIDER=openai OPENAI_BASE_URL=http://localhost:11434/v1 \
-PARAMENTOR_MODEL=qwen2.5-coder:14b python3 -m agent.paralelizar mi_codigo.c
+# Opcional (de pago): API de frontera
+PARAMENTOR_PROVIDER=anthropic ANTHROPIC_API_KEY=... python3 -m agent.paralelizar mi_codigo.c
 ```
 
 Devuelve el código paralelo, la explicación de cada pragma, el speedup medido y, si hubo intentos fallidos, por qué se rechazaron.

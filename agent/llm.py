@@ -2,7 +2,8 @@
 Capa de abstracción del modelo. El resto del proyecto no sabe qué modelo hay detrás.
 
 Proveedores:
-  - anthropic : API de Anthropic         (env: ANTHROPIC_API_KEY, PARAMENTOR_MODEL)
+  - ollama    : modelo LOCAL y gratuito con Ollama (por defecto)   (env: PARAMENTOR_MODEL)
+  - anthropic : API de Anthropic (de pago)         (env: ANTHROPIC_API_KEY, PARAMENTOR_MODEL)
   - openai    : cualquier endpoint compatible con OpenAI: vLLM, Ollama, OpenRouter...
                 (env: OPENAI_API_KEY, OPENAI_BASE_URL, PARAMENTOR_MODEL)
   - mock      : respuestas predefinidas, para tests sin red ni coste
@@ -63,7 +64,10 @@ class MockLLM:
 
 
 def crear_llm(proveedor: str | None = None) -> LLM:
-    proveedor = proveedor or os.environ.get("PARAMENTOR_PROVIDER", "anthropic")
+    proveedor = proveedor or os.environ.get("PARAMENTOR_PROVIDER", "ollama")
+    if proveedor == "ollama":   # gratis: endpoint compatible con OpenAI que Ollama expone en local
+        os.environ.setdefault("OPENAI_BASE_URL", "http://localhost:11434/v1")
+        return OpenAICompatLLM(nombre="ollama")
     if proveedor == "anthropic":
         return AnthropicLLM()
     if proveedor == "openai":
