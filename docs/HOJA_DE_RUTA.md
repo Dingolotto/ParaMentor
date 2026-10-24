@@ -133,7 +133,7 @@ Sí, hacen falta. Ahorran dinero, tiempo y evitan respuestas absurdas. Pero **no
 | 3 | Servir el modelo propio | GPU serverless que cobra por segundo (Modal, RunPod Serverless) con vLLM; o versión cuantizada en local con Ollama para demos | Por uso; cero cuando nadie lo usa |
 | 4 | Escala | Varios workers de verificación + modelo propio + API de frontera para lo difícil (enrutado híbrido) | Según tráfico |
 
-\* Precios orientativos: comprobar antes de contratar.
+\* Precios orientativos: comprobar antes de contratar. Desglose completo en [COSTES.md](COSTES.md).
 
 ---
 
