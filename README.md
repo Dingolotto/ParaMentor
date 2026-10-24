@@ -2,7 +2,15 @@
 
 **Tu mentor de programación paralela, en español y con código verificado.**
 
-ParaMentor es una IA especializada en **OpenMP en C** (después MPI y GPU) que enseña desde lo básico hasta nivel avanzado. Se apoya en un modelo abierto de código ajustado con LoRA/QLoRA y en RAG sobre la documentación oficial. Su diferencia frente a un asistente generalista es que **todo el código que propone pasa por un verificador**: compila, da el resultado correcto, no tiene carreras de datos y escala.
+ParaMentor es una IA especializada en **programación paralela**, empezando por OpenMP en C y siguiendo con MPI y GPU. Razona problemas difíciles en segundos, paraleliza y corrige código, y enseña tanto a principiantes como a profesionales del HPC.
+
+Su diferencia frente a un asistente generalista: **no da por buena una paralelización hasta comprobarla**. Todo el código pasa por un verificador (compila, da el resultado correcto, no tiene carreras de datos y escala). Si falla, el agente recibe el error con la línea culpable y se corrige solo antes de responder.
+
+```
+modelo potente + RAG especializado + verificador + autocorrección + datos verificados
+```
+
+Empieza con un modelo de frontera por API como cerebro y evolucionará a un modelo abierto propio entrenado con los datos que el sistema ha verificado ([por qué](docs/decisiones/0001-cerebro-por-api-primero.md), [arquitectura](docs/ARQUITECTURA.md)).
 
 ## Modos
 
@@ -14,7 +22,7 @@ ParaMentor es una IA especializada en **OpenMP en C** (después MPI y GPU) que e
 
 ## Estado
 
-🚧 **v0.1 en construcción**: verificador funcional y primeros ejercicios. Ver [ROADMAP.md](ROADMAP.md) y el diario en [docs/devlog](docs/devlog).
+🚧 **v0.1 en construcción**: verificador, bucle agente de autocorrección y primeros ejercicios funcionando. Ver [ROADMAP.md](ROADMAP.md) y el diario en [docs/devlog](docs/devlog).
 
 ## Estructura
 
@@ -25,10 +33,30 @@ paramentor/
 ├── rag/             # Ingesta de la especificación y docs de OpenMP
 ├── data-pipeline/   # Generación de datos filtrados por el verificador
 ├── finetune/        # Scripts y experimentos LoRA/QLoRA
-├── agent/           # Bucle de autocorrección con ejecución
+├── agent/           # Capa de modelo + bucle generar → verificar → corregir
 ├── api/             # Backend
 ├── web/             # Frontend
 └── docs/devlog/     # Diario del proceso, un hito por entrada
+```
+
+## Paralelizar con autocorrección
+
+```bash
+pip install anthropic                       # o: pip install openai (para vLLM / Ollama / OpenRouter)
+export ANTHROPIC_API_KEY=...
+python3 -m agent.paralelizar mi_codigo.c --args 1000000 --args-carreras 10000 --nivel fundamentos
+
+# Con un modelo local en Ollama
+PARAMENTOR_PROVIDER=openai OPENAI_BASE_URL=http://localhost:11434/v1 \
+PARAMENTOR_MODEL=qwen2.5-coder:14b python3 -m agent.paralelizar mi_codigo.c
+```
+
+Devuelve el código paralelo, la explicación de cada pragma, el speedup medido y, si hubo intentos fallidos, por qué se rechazaron.
+
+## Tests
+
+```bash
+python3 -m unittest discover -p "test_*.py" -v
 ```
 
 ## Verificador: uso rápido
