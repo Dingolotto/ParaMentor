@@ -1,4 +1,6 @@
-# Hoja de ruta
+# Hoja de ruta (funcionalidades)
+
+> Estrategia, modelo base, datos, barreras y alojamiento: [docs/HOJA_DE_RUTA.md](docs/HOJA_DE_RUTA.md).
 
 > **Visión:** la referencia mundial en programación paralela asistida por IA. Razona problemas difíciles en segundos, paraleliza y corrige código con **garantía verificada** y enseña desde cero hasta nivel HPC profesional.
 >

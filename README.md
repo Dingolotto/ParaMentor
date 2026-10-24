@@ -22,7 +22,7 @@ Empieza con un modelo de frontera por API como cerebro y evolucionará a un mode
 
 ## Estado
 
-🚧 **v0.1 en construcción**: verificador, bucle agente de autocorrección y primeros ejercicios funcionando. Ver [ROADMAP.md](ROADMAP.md) y el diario en [docs/devlog](docs/devlog).
+🚧 **v0.1 en construcción**: verificador, bucle agente de autocorrección y primeros ejercicios funcionando. Ver la [hoja de ruta estratégica](docs/HOJA_DE_RUTA.md), el [ROADMAP](ROADMAP.md) de funcionalidades y el diario en [docs/devlog](docs/devlog).
 
 ## Estructura
 
