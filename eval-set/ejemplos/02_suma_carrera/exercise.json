@@ -1,0 +1,11 @@
+{
+  "id": "02_suma_carrera",
+  "titulo": "Trampa: reducción sin reduction",
+  "nivel": "fundamentos",
+  "enunciado": "Esta versión paralela tiene un fallo clásico. Encuéntralo y corrígelo.",
+  "trampa": "suma compartida sin reduction -> carrera de datos",
+  "args": ["50000000"],
+  "args_carreras": ["200000"],
+  "tolerancia_rel": 1e-9,
+  "repeticiones": 3
+}
