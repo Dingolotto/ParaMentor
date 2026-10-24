@@ -1,0 +1,11 @@
+{
+  "id": "03_matmul",
+  "titulo": "Multiplicación de matrices",
+  "nivel": "fundamentos",
+  "enunciado": "Paraleliza C = A*B repartiendo las filas entre hilos.",
+  "args": ["600"],
+  "args_carreras": ["80"],
+  "tolerancia_rel": 1e-9,
+  "repeticiones": 2,
+  "speedup_minimo": 1.5
+}
