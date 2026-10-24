@@ -8,18 +8,18 @@
 
 ## 1. Resumen en 30 segundos
 
-1. **No empezamos creando la IA.** Empezamos por lo que decide si la IA es buena: el **verificador** (hecho) y el **conjunto de evaluación** (siguiente).
-2. Después lanzamos un **producto útil** con un modelo de frontera por API + RAG + verificador + barreras. Ya es mejor que un chat genérico porque comprueba lo que dice.
-3. Mientras la gente lo usa, acumulamos **datos verificados**. Con ellos **entrenamos nuestro modelo** (fine-tuning de un modelo abierto) y lo comparamos con el de la API.
-4. El modelo propio se aloja y se sirve **solo cuando el eval-set demuestra que está a la altura**.
+> **Modo vigente: prototipo de aprendizaje a coste 0 €** ([decisión 0002](decisiones/0002-prototipo-coste-cero.md)). Se recorre el proceso completo de crear una IA especializada sin gastar dinero. La versión de pago (API de frontera, VPS, web pública) queda documentada como **ampliación opcional** para el futuro.
+
+1. **No empezamos creando la IA.** Empezamos por lo que decide si es buena: el **verificador** (hecho) y el **conjunto de evaluación** (siguiente).
+2. **Línea base**: un modelo abierto **local** (Ollama) + RAG + verificador + bucle agente. Medimos.
+3. **Fine-tuning gratis** (QLoRA en GPU gratuita de Kaggle) con datos verificados. Volvemos a medir: *la mejora medida es el resultado del proyecto*.
+4. **Demo local** con la interfaz del Figma + vídeo/GIF y devlog en GitHub como portfolio.
 
 ```
- Fase 1            Fase 2                  Fase 3                     Fase 4
- Medir      ──►    Producto con API  ──►   Modelo propio       ──►    Escalar
- (eval-set)        (web pública v0.1)      (fine-tuning + datos)      (MPI, GPU, IDE, universidades)
+ Fase 1          Fase 2                    Fase 3                      Fase 4
+ Medir    ──►    Línea base local   ──►    Fine-tuning gratis   ──►    Demo + portfolio
+ (eval-set)      (Ollama + RAG + bucle)    (Kaggle, QLoRA)             (web local, vídeo, devlog)
 ```
-
----
 
 ## 2. ¿Cómo se crea una IA? (y cuál es la nuestra)
 
@@ -51,8 +51,10 @@ Regla de oro: **el conocimiento no se mete con fine-tuning, se mete con RAG.** E
 
 ## 3. ¿En qué modelo nos basamos?
 
-### Fases 1-2: cerebro por API
-Un modelo de frontera (Anthropic u otro), configurable en `agent/llm.py`. Razona mejor que cualquier modelo que podamos ejecutar nosotros y nos permite tener algo útil ya.
+### Fases 1-2: modelo abierto local (0 €)
+Se ejecuta en tu PC con **Ollama**, ya soportado en `agent/llm.py` como proveedor por defecto. El tamaño depende de tu hardware (RAM y GPU): se elige con los datos de la sección "Datos pendientes" del contexto. Será menos listo que un modelo de frontera, y **eso es parte del aprendizaje**: medir cuánto compensan el RAG, el bucle agente y el fine-tuning.
+
+*Ampliación opcional de pago:* cambiar a una API de frontera es una variable de entorno (`PARAMENTOR_PROVIDER=anthropic`).
 
 ### Fase 3: modelo abierto propio
 Requisitos: licencia que permita uso comercial, bueno en código, que quepa en **una** GPU con QLoRA.
@@ -66,7 +68,7 @@ Candidatos a fecha de octubre de 2026 (la lista cambia cada pocos meses, **se de
 | Qwen3.6-35B-A3B | 35B MoE (3B activos) | Apache-2.0 | Muy barato por token: ideal para servir |
 | Gemma 4 (variantes pequeñas) | 2-12B | Apache-2.0 | Para experimentos rápidos y ejecución local/offline |
 
-Plan: primeros experimentos con un modelo **pequeño** (barato y rápido de iterar). El serio, con uno de ~27B.
+Plan a coste 0: el fine-tuning se hace en una **GPU gratuita de 16 GB** (Kaggle: P100 o 2×T4, unas 30 h/semana), así que se ajustan modelos **pequeños** (unos 1-8B en QLoRA). Los de ~27B quedan para la ampliación de pago. Para aprender el proceso, un modelo pequeño es incluso mejor: entrena rápido y se itera mucho.
 
 ---
 
@@ -95,7 +97,7 @@ Formato: un fichero JSONL con conversaciones (`usuario → respuesta ideal`). Ob
 |---|---|---|
 | **DataRaceBench** (LLNL, licencia BSD) | Microbenchmarks OpenMP etiquetados con carrera y sin carrera | Oro para el modo **Revisa** y para evaluar |
 | **Mutaciones automáticas** | Coger código correcto y romperlo a propósito: quitar `reduction`, cambiar `private` por `shared`, añadir `nowait`, crear una dependencia. El fallo queda etiquetado | Miles de trampas con la respuesta conocida |
-| **Generación sintética filtrada** | El modelo de la API resuelve ejercicios y **solo se guardan los que aprueba el verificador** | Volumen; revisar los términos de uso del proveedor |
+| **Generación sintética filtrada** | El modelo local resuelve ejercicios muchas veces y **solo se guardan los que aprueba el verificador** (auto-mejora: el modelo aprende de sus propios aciertos verificados) | Volumen gratis y sin problemas de términos de uso |
 | **Uso real (con permiso)** | Conversaciones de usuarios que acaban en código verificado | Lo más realista |
 | **Pares de preferencia** | Para el mismo problema, una respuesta que aprueba y otra que suspende | Entrenamiento por preferencias (DPO): el modelo aprende a preferir lo correcto |
 
@@ -120,22 +122,21 @@ Sí, hacen falta. Ahorran dinero, tiempo y evitan respuestas absurdas. Pero **no
 
 ---
 
-## 6. ¿Dónde se aloja?
+## 6. ¿Dónde se aloja? (versión 0 €)
 
-| Fase | Componente | Dónde | Coste orientativo* |
-|---|---|---|---|
-| 1 | Todo | Tu PC (Linux/WSL) + API del modelo | Uso de API: pocos €/mes en desarrollo |
-| 2 | Frontend (web) | Vercel o Netlify | Gratis en plan básico |
-| 2 | Backend (API) + verificador | **VPS con Docker** (Hetzner, OVH...). No vale serverless: hay que ejecutar gcc/clang y contenedores sandbox, y medir speedup con núcleos dedicados | ~5-20 €/mes |
-| 2 | Base de datos, usuarios, pgvector para RAG | **Supabase** (ya lo controlas) | Gratis al principio |
-| 2 | Cerebro | API del proveedor | Por uso: con límites y caché |
-| 3 | Entrenamiento | GPU alquilada por horas (RunPod, Vast.ai, Lambda...). 48 GB van holgados para QLoRA de ~27B | Decenas de € por entrenamiento |
-| 3 | Servir el modelo propio | GPU serverless que cobra por segundo (Modal, RunPod Serverless) con vLLM; o versión cuantizada en local con Ollama para demos | Por uso; cero cuando nadie lo usa |
-| 4 | Escala | Varios workers de verificación + modelo propio + API de frontera para lo difícil (enrutado híbrido) | Según tráfico |
+| Componente | Dónde | Coste |
+|---|---|---|
+| Modelo (inferencia) | Tu PC con Ollama | 0 € |
+| Verificador | Tu PC (Linux/WSL) | 0 € |
+| RAG | Base vectorial local (Chroma/SQLite) con modelo de embeddings abierto. Alternativa: Supabase gratis + pgvector | 0 € |
+| Fine-tuning | Kaggle Notebooks (GPU gratis, ~30 h/semana, sesiones de 12 h). Alternativas: Google Colab gratis, Lightning AI (15 créditos/mes) | 0 € |
+| Modelo entrenado | Hugging Face Hub (repositorio de modelos público) o en local | 0 € |
+| Interfaz | Web **local** siguiendo el Figma (o Gradio para ir rápido) | 0 € |
+| Escaparate público | Repo de GitHub + README con GIFs + vídeo demo + GitHub Pages con la landing estática | 0 € |
 
-\* Precios orientativos: comprobar antes de contratar. Desglose completo en [COSTES.md](COSTES.md).
+**¿Por qué no una web pública que ejecute código?** Porque exige un servidor con sandbox (que cuesta dinero) y abre riesgos de seguridad. Para un prototipo de aprendizaje, la demo en vídeo y el repo enseñan lo mismo. Ojo también con Hugging Face Spaces: en 2026 hay quejas de usuarios de que la capa gratuita se ha recortado (Docker marcado como de pago para algunas cuentas), así que no contamos con ella.
 
----
+*Ampliación opcional de pago (si algún día hay usuarios o financiación):* ver [COSTES.md](COSTES.md).
 
 ## 7. Fases, con criterio de salida
 
@@ -147,32 +148,32 @@ Verificador, bucle agente, capa de modelo, tests y repo.
 ### Fase 1: medir (noviembre-diciembre de 2026)
 - Eval-set de **50 ejercicios** propios + una selección de DataRaceBench.
 - Generador de **mutaciones** (trampas automáticas).
-- Medición: % de aprobados del modelo de la API **sin** y **con** bucle agente.
-- ✅ **Sale cuando:** tenemos números reales y una entrada de devlog que los explica.
+- ✅ **Sale cuando:** el eval-set se ejecuta entero con un comando y da un informe.
 
-### Fase 2: producto v0.1 (enero-marzo de 2027)
-- RAG sobre especificación + ejemplos + apuntes, con citas.
-- Modos Paraleliza y Revisa por API, con streaming + verificación asíncrona.
-- Barreras 1-6.
-- Web siguiendo el Figma, VPS con sandbox y Supabase.
-- ✅ **Sale cuando:** 5-10 compañeros la usan para estudiar paralela, con más del 90 % de respuestas verificadas sin fallos en el eval-set.
+### Fase 2: línea base local (enero-febrero de 2027)
+- Elegir modelo según tu hardware y ejecutarlo con Ollama.
+- RAG local sobre especificación + ejemplos + apuntes.
+- Barreras 1, 2, 4, 6 y 7 (las que no cuestan dinero).
+- Medir: modelo solo → + RAG → + bucle agente. **Tres números, tres entradas de devlog.**
+- ✅ **Sale cuando:** sabemos cuánto aporta cada pieza.
 
-### Fase 3: modelo propio v0.5 (abril-junio de 2027)
-- Dataset de 2.000+ ejemplos verificados.
-- QLoRA sobre el modelo base elegido midiendo en el eval-set.
-- Comparativa honesta contra la API y publicación en el devlog.
-- ✅ **Sale cuando:** el modelo propio + bucle iguala a la API en Fundamentos/Intermedio a menor coste. Entonces se activa el enrutado híbrido.
+### Fase 3: fine-tuning gratis (marzo-mayo de 2027)
+- Dataset verificado: mutaciones + DataRaceBench + ejercicios generados por el **propio modelo local** y filtrados por el verificador (sin coste ni problemas de términos de uso).
+- QLoRA en Kaggle con Unsloth/PEFT sobre un modelo pequeño.
+- Volver a medir y publicar la comparativa antes/después.
+- ✅ **Sale cuando:** hay una mejora medida (o una explicación clara de por qué no la hay, que también es aprendizaje).
 
-### Fase 4: escalar (verano de 2027 en adelante)
-Nivel Avanzado, MPI, GPU, plugin de IDE y propuesta a universidades y centros HPC.
-
----
+### Fase 4: demo y portfolio (verano de 2027)
+- Interfaz local con el diseño del Figma: chat, panel de Verificación y speedup.
+- Vídeo demo, README con GIFs, landing en GitHub Pages y modelo publicado en Hugging Face.
+- ✅ **Sale cuando:** alguien externo entiende el proyecto en 2 minutos mirando el repo.
 
 ## 8. Lo que **no** hacemos (para no perder tiempo)
 
 - Entrenar desde cero.
 - Meter conocimiento por fine-tuning.
 - Entrenar el modelo propio antes de tener eval-set y datos verificados.
+- Gastar dinero en esta etapa: todo lo de pago es ampliación opcional.
 - Alojar una GPU 24/7 sin usuarios.
 - Abrir la ejecución de código al público sin sandbox.
 - Elegir modelo por rankings de internet en vez de por **nuestro** eval-set.
@@ -181,5 +182,7 @@ Nivel Avanzado, MPI, GPU, plugin de IDE y propuesta a universidades y centros HP
 
 ## Fuentes
 - [Best Open Source LLMs 2026 (morphllm)](https://www.morphllm.com/best-open-source-llm)
+- [Free cloud GPU 2026 (AIMultiple)](https://aimultiple.com/free-cloud-gpu)
+- [Hilo de Hugging Face sobre la capa gratuita de Spaces](https://discuss.huggingface.co/t/docker-sdk-now-marked-as-paid-when-creating-a-new-space/177580/5)
 - [DataRaceBench (LLNL, GitHub)](https://github.com/LLNL/dataracebench)
 - [Especificaciones OpenMP](https://www.openmp.org/specifications/)

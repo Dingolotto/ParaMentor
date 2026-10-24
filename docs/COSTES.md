@@ -1,4 +1,20 @@
-# Presupuesto de ParaMentor (mínimo coste, máximo producto)
+# Presupuesto de ParaMentor
+
+## Prototipo de aprendizaje: **0 €** (vigente)
+
+| Pieza | Herramienta gratuita |
+|---|---|
+| Modelo | Ollama en tu PC |
+| Verificador, eval-set, RAG | Tu PC (Linux/WSL), base vectorial local |
+| Fine-tuning | Kaggle (GPU de 16 GB, ~30 h/semana), Colab gratis, Lightning AI (15 créditos/mes) |
+| Publicar modelo | Hugging Face Hub |
+| Escaparate | GitHub + GitHub Pages + vídeo demo |
+
+Único "coste": tiempo y la electricidad del PC.
+
+---
+
+# Ampliación opcional de pago (solo si algún día hay usuarios o financiación)
 
 > Precios consultados en octubre de 2026. Para simplificar se toma 1 $ ≈ 1 € como margen de seguridad. Todo es **orientativo**: revisar antes de contratar.
 

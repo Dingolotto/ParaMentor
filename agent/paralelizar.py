@@ -1,8 +1,8 @@
 """
 Modo Paraleliza con bucle agente: generar -> verificar -> corregir.
 
-  python -m agent.paralelizar mi_codigo.c --args 1000000 --args-carreras 10000
-  PARAMENTOR_PROVIDER=openai OPENAI_BASE_URL=http://localhost:11434/v1 python -m agent.paralelizar mi_codigo.c
+  ollama pull <modelo>                      # una vez
+  PARAMENTOR_MODEL=<modelo> python -m agent.paralelizar mi_codigo.c --args 1000000 --args-carreras 10000
 
 El código secuencial del usuario es la referencia (seq.c) y la propuesta del
 modelo es el candidato (par.c). Solo se devuelve como "verificada" si aprueba.
@@ -115,7 +115,7 @@ def main() -> int:
     ap.add_argument("--args-carreras", nargs="*")
     ap.add_argument("--nivel", default="intermedio", choices=["fundamentos", "intermedio", "avanzado"])
     ap.add_argument("--intentos", type=int, default=3)
-    ap.add_argument("--proveedor", choices=["anthropic", "openai"])
+    ap.add_argument("--proveedor", choices=["ollama", "openai", "anthropic"], help="por defecto: ollama (local, gratis)")
     ap.add_argument("--salida", type=Path, help="guardar el código paralelo aquí")
     a = ap.parse_args()
 

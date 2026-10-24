@@ -1,7 +1,7 @@
 # Decisión 0001 · Cerebro por API primero, modelo propio después
 
 **Fecha:** 2026-10-24
-**Estado:** aceptada
+**Estado:** aplazada. Pasa a ser la *ampliación opcional de pago* tras la [decisión 0002](0002-prototipo-coste-cero.md)
 
 ## Contexto
 El objetivo es que ParaMentor sea **el mejor asistente en programación paralela**: que razone problemas difíciles en segundos, paralelice y corrija código de forma fiable y sirva de mentor desde principiantes hasta profesionales.

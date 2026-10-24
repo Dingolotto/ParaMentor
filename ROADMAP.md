@@ -4,7 +4,7 @@
 
 > **Visión:** la referencia mundial en programación paralela asistida por IA. Razona problemas difíciles en segundos, paraleliza y corrige código con **garantía verificada** y enseña desde cero hasta nivel HPC profesional.
 >
-> **Estrategia** ([decisión 0001](docs/decisiones/0001-cerebro-por-api-primero.md)): un modelo de frontera por API como cerebro primero; RAG, verificador y bucle de autocorrección como ventaja propia; un modelo abierto propio entrenado con datos verificados después.
+> **Estrategia** ([decisión 0002](docs/decisiones/0002-prototipo-coste-cero.md)): **prototipo de aprendizaje a coste 0 €**. Modelo abierto local con Ollama, RAG local, verificador, bucle agente y fine-tuning en GPU gratuita (Kaggle). Lo de pago (API de frontera, VPS, web pública) es ampliación opcional ([costes](docs/COSTES.md)).
 
 ---
 
