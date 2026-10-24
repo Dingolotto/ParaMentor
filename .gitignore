@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Binarios C
+*.o
+*.out
+a.out
+
+# Resultados y datos pesados
+resultados*.json
+data/raw/
+models/
+checkpoints/
+*.safetensors
+*.gguf
+
+# Entorno
+.env
+.vscode/
+.idea/
+.DS_Store
