@@ -125,4 +125,4 @@ eval-set/<grupo>/<id>/
 
 ## Licencia
 
-Por decidir. Revisar las licencias de cualquier material de terceros antes de incluirlo en `eval-set/` o `rag/`.
+Código bajo licencia [MIT](LICENSE). El material de terceros (especificación OpenMP, DataRaceBench, tutoriales) **no se incluye** en el repo: se descarga aparte y cada uno mantiene su propia licencia.
